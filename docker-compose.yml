@@ -10,7 +10,7 @@ services:
     ports:
       - "3006:3006"
     volumes:
-      - ./uploads:/app/uploads  # Mount uploads directory for persistent storage
+      - uploads-data:/app/uploads  # Mount uploads directory for persistent storage
     environment:
       - NODE_ENV=production
       - PORT=3006
@@ -34,3 +34,7 @@ services:
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  uploads-data:
+    driver: local
