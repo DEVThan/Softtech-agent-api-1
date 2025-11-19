@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: softtech-agent-api
+    restart: unless-stopped
+    ports:
+      - "3006:3006"   # ใช้ mapping แทน network_mode: host บน macOS
+    environment:
+      - NODE_ENV=production
+      - PORT=3006
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME_TH=${DB_NAME_TH}
+      - DB_NAME_MM=${DB_NAME_MM}
+      - DB_NAME_EN=${DB_NAME_EN}
+      - JWT_SECRET=${JWT_SECRET}
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3006/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s

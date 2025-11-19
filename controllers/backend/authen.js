@@ -70,6 +70,7 @@ async function login(req, res) {
             username: auth[0].username,
             pass: auth[0].password,
             role: user.role || "admin",
+            local: req.headers.country,
           },
           process.env.JWT_SECRET,
           { expiresIn: process.env.JWT_EXPIRES || "1d" }
