@@ -9,6 +9,8 @@ services:
     restart: unless-stopped
     ports:
       - "3006:3006"
+    env_file:
+      - .env
     volumes:
       - uploads-data:/app/uploads  # Mount uploads directory for persistent storage
     environment:
