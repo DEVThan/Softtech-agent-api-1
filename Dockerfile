@@ -1,32 +1,23 @@
-# Build stage
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-# copy package files and tsconfig
-COPY package*.json ./
-COPY tsconfig.json ./
-
-# install deps and build
-RUN npm ci
-COPY src ./src
-RUN npm run build
-
-# Production stage
+# Production image for Node.js Express API
 FROM node:20-alpine
 
 WORKDIR /app
 
-# copy only production deps
+# Install production dependencies
 COPY package*.json ./
 ENV NODE_ENV=production
-RUN npm ci --only=production
+RUN npm install --production --no-optional
 
-# copy built output
-COPY --from=builder /app/dist ./dist
+# Copy application source code
+COPY index.js ./
+COPY db.js ./
+COPY controllers ./controllers
+COPY middleware ./middleware
+COPY routes ./routes
 
-# create non-root user and set ownership
-RUN addgroup -g 1001 -S nodejs && \
+# Create uploads directory and set permissions
+RUN mkdir -p uploads && \
+    addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001 && \
     chown -R nodejs:nodejs /app
 
@@ -34,7 +25,8 @@ USER nodejs
 
 EXPOSE 3006
 
+# Health check endpoint
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3006/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+  CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 3006) + '/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})" || exit 1
 
-CMD ["node", "dist/server.js"]
+CMD ["node", "index.js"]

@@ -8,12 +8,14 @@ services:
     container_name: softtech-agent-api
     restart: unless-stopped
     ports:
-      - "3006:3006"   # ใช้ mapping แทน network_mode: host บน macOS
+      - "3006:3006"
+    volumes:
+      - ./uploads:/app/uploads  # Mount uploads directory for persistent storage
     environment:
       - NODE_ENV=production
       - PORT=3006
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
+      - DB_HOST=${DB_HOST:-localhost}
+      - DB_PORT=${DB_PORT:-5432}
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_NAME_TH=${DB_NAME_TH}
@@ -26,3 +28,9 @@ services:
       timeout: 3s
       retries: 3
       start_period: 40s
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

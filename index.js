@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 const path = require("path");
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -116,6 +116,11 @@ app.use("/admin", performanceRoutes);
 //     res.status(500).send("Server Error");
 //   }
 // });
+
+// Health check endpoint for Docker
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
