@@ -7,8 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: softtech-agent-api
     restart: unless-stopped
-    ports:
-      - "3006:3006"
+    network_mode: host
     env_file:
       - .env
     volumes:
@@ -30,12 +29,6 @@ services:
       timeout: 3s
       retries: 3
       start_period: 40s
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
 
 volumes:
   uploads-data:
