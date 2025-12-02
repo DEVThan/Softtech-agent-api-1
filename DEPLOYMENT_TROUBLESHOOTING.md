@@ -185,11 +185,11 @@ sed -i 's/ = /=/g' .env
 ### 2. Upload ไฟล์ขึ้น Server
 
 ```bash
-rsync -avz -e "ssh -p 6789" \
+  rsync -avz -e "ssh -p 6789" \
   --exclude 'node_modules' \
   --exclude 'dist' \
   --exclude 'uploads' \
-  /Users/0xfff/Softtech-agent-api-1/ \
+  "/Users/w/Desktop/Softtech Application/project/api/softtechnw-agent-api/" \
   root@softtechnw.com:/opt/softtech-agent-api/
 ```
 

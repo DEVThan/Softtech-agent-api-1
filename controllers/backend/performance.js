@@ -48,7 +48,7 @@ async function get_all(req, res) {
         currentPage: page,
       });
     }
-    if (result.rows.length === 0) {
+    if (performanceResult.rows.length === 0) {
       return res.status(404).json({ status: false, message: "Performance not found" });
     }
   } catch (err) {
@@ -205,13 +205,10 @@ async function update(req, res) {
     }
 
     const now = new Date();
+    const strUpdateQuery = `UPDATE performance SET name = $1, description = $2, updatedate = $3 WHERE performancecode = $4 AND  agentcode = $5 RETURNING *`;
     await req.pool.query(
-      `UPDATE performance  SET 
-      name = $3, 
-      description = $4, 
-      updatedate = $5
-      WHERE performancecode = $1 AND  agentcode = $2 ` ,
-      [performancecode, agentcode, name, desc, now]
+      strUpdateQuery,
+      [name, desc, now, performancecode, agentcode]
     );
 
     // insert all file with EXIF
@@ -254,19 +251,21 @@ async function update(req, res) {
 
       insertValues.push([performancecode, file.path, lat, long, now]);
     }
-    const placeholders = insertValues
-    .map((_, rowIndex) => {
-      const offset = rowIndex * 5;
-      return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5})`;
-    })
-    .join(", ");
+    if (insertValues.length > 0) {
+      const placeholders = insertValues
+      .map((_, rowIndex) => {
+        const offset = rowIndex * 5;
+        return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5})`;
+      })
+      .join(", ");
 
-    const queryText = `
-      INSERT INTO performance_file (performancecode, path, lat, long, createdate)
-      VALUES ${placeholders}
-      RETURNING *;
-    `;
-    const fileResult = await req.pool.query(queryText, insertValues.flat());
+      const queryText = `
+        INSERT INTO performance_file (performancecode, path, lat, long, createdate)
+        VALUES ${placeholders}
+        RETURNING *;
+      `;
+      const fileResult = await req.pool.query(queryText, insertValues.flat());
+    }
 
     res.status(200).json({
       status: true,
