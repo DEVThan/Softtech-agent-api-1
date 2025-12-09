@@ -13,7 +13,6 @@ const fs = require("fs");
 
 const thumnal_storage_add = multer.diskStorage({
   destination: (req, file, cb) => {
-    console.log(req.body);
     const agentcode = req.agentcode || req.body.agentcode;
     const country = req.country || req?.header("country") || "en";
     const dir = path.join("uploads", "profile", country, agentcode);
