@@ -68,7 +68,8 @@ async function update_newpassword(req, res) {
     if (agentauthenesult.rows.length > 0) {
       let result_agent = agentauthenesult.rows[0];
 
-      const hashedPassword = await bcrypt.hash(password, 10);
+      // const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = password;
       
       const result = await req.pool.query(
         "UPDATE agentauthen SET password = $1, updatedate = $2 WHERE id = $3 AND agentcode = $4 RETURNING *",
@@ -197,7 +198,8 @@ async function createAgent(req, res) {
 
     if(result.rows.length > 0){
       // สร้างข้อมูลในตาราง authen
-      const hashedPassword = await bcrypt.hash(agentCode, 10);
+      // const hashedPassword = await bcrypt.hash(agentCode, 10);
+      const hashedPassword = agentCode;
       const authenReq = {
         ...req,
         body: {

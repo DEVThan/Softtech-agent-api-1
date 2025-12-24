@@ -58,8 +58,10 @@ async function login(req, res) {
       const user = auth.find(u => u.username === username);
       if (!user) return res.status(200).json({ status: false, message: 'Username not found' });
 
-      const isMatch = await bcrypt.compare(password, auth[0].password);
-      if (!isMatch) return res.status(200).json({ status: false, message: 'Incorrect password' });
+      // const isMatch = await bcrypt.compare(password, auth[0].password);
+      // if (!isMatch) return res.status(200).json({ status: false, message: 'Incorrect password' });
+
+      if (password != auth[0].password) return res.status(200).json({ status: false, message: 'Incorrect password' });
 
       const agent_result = await req.pool.query("SELECT * FROM agent WHERE agentcode = $1", [auth[0].agentcode]);
       if (agent_result.rows.length > 0) {
