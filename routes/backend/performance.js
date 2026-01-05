@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const dbMiddleware = require("../../db");
 const verifyToken = require("../../middleware/verifyToken");
-const { get_all,  get_once, create, update, delete_performance_file} = require("../../controllers/backend/performance");
+const { get_all,  get_once, create, update, delete_performance, delete_performance_file} = require("../../controllers/backend/performance");
 
 // Generate PerformanceCode
 async function generatePerformanceCode(req, prefix) {
@@ -99,6 +99,7 @@ async (req, res, next) => {
 },
 update);
 
+router.post("/delete_performance", verifyToken,  dbMiddleware, delete_performance);
 router.post("/delete_performance_file", verifyToken,  dbMiddleware, delete_performance_file);
 
 

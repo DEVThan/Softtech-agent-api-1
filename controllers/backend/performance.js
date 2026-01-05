@@ -49,7 +49,7 @@ async function get_all(req, res) {
       });
     }
     if (performanceResult.rows.length === 0) {
-      return res.status(404).json({ status: false, message: "Performance not found" });
+      return res.status(404).json({ status: true, message: "Performance not found" });
     }
   } catch (err) {
     return res.status(500).json({
@@ -285,7 +285,42 @@ async function update(req, res) {
   }
 }
 
+const path = require("path");
 const fs = require("fs");
+async function delete_performance(req, res) {
+  try {
+    
+    const { performancecode, agentcode} = req.body;
+    if (!performancecode || !agentcode) {
+      return res.status(400).json({
+        status: false,
+        message: "Missing required fields (performancecode, agentcode)",
+      });
+    }
+    
+    await req.pool.query( `DELETE FROM performance  WHERE performancecode = $1 AND agentcode = $2`, [performancecode, agentcode] );
+    await req.pool.query( `DELETE FROM performance_file  WHERE performancecode = $1`, [performancecode] );
+
+     const country = req.country || req?.header("country") || "en";
+     const dir = path.join("uploads", "performance", country, agentcode, performancecode);
+    
+    // delete all file
+    fs.rmSync(dir, { recursive: true, force: true });
+    res.status(200).json({
+      status: true,
+      message: "remove successfully",
+      result: ''
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: false,
+      message: "DB Error.",
+      result: err.message
+    });
+  } finally {
+    // req.pool.end();
+  }
+}
 async function delete_performance_file(req, res) {
   try {
     
@@ -337,6 +372,6 @@ async function delete_performance_file(req, res) {
 }
 
 module.exports = {
-  get_all,  get_once, create, update,
+  get_all,  get_once, create, update, delete_performance,
   delete_performance_file
 };
