@@ -69,13 +69,13 @@ async function update_profile(req, res) {
 
     if (req.files && req.files.length > 0) {
       // เก็บ path ที่ใช้แสดงผลจริง
-      let thumnalPath = path.join( "uploads", "profile", countries, agentcode, req.files[0].filename );
-      await req.pool.query( `UPDATE agent  SET  thumnal = $2 WHERE agentcode = $1`, [agentcode, thumnalPath] );
+      let thumbnailPath = path.join( "uploads", "profile", countries, agentcode, req.files[0].filename );
+      await req.pool.query( `UPDATE agent  SET  thumbnail = $2 WHERE agentcode = $1`, [agentcode, thumbnailPath] );
     }
 
     const agentresult = [];
     const agent = await req.pool.query(
-      "SELECT agentcode, agentname, agentsurname, emailaddress, telephone, addr1,  province, postalcode, thumnal FROM agent WHERE agentcode = $1", [agentcode]);
+      "SELECT agentcode, agentname, agentsurname, emailaddress, telephone, addr1,  province, postalcode, thumbnail FROM agent WHERE agentcode = $1", [agentcode]);
     if (agent.rows.length > 0) {
       const result = agent.rows;
       agentresult.push(...result);
