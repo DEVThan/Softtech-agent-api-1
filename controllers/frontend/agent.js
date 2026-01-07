@@ -167,7 +167,7 @@ async function createAgent(req, res) {
   try {
     const { 
       idcard, firstName, surname, phonenumber, email, 
-      address, district, province, postalcode,
+      address, district, province, postalcode, lat, lng
       //work_street, work_country, work_subdistrict, 
     } = req.body;
 
@@ -180,6 +180,7 @@ async function createAgent(req, res) {
         result: ""
       });
     }
+
     // const dupp_phonenumber = await req.pool.query(`SELECT cardno FROM agent WHERE telephone = $1`, [phonenumber]);
     // if (dupp_phonenumber.rows.length > 0) {
     //   return res.status(200).json({
@@ -191,10 +192,10 @@ async function createAgent(req, res) {
 
     const agentCode = await generateAgentCode(req, "");
     const str = `INSERT INTO agent (
-        agentcode, cardno, agentname, agentsurname, telephone, emailaddress, addr1, district, province, postalcode
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        agentcode, cardno, agentname, agentsurname, telephone, emailaddress, addr1, district, province, postalcode, lat, lng
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING * `;
-    const result = await req.pool.query(str, [ agentCode, idcard, firstName, surname, phonenumber, email, address, district, province, postalcode ]);
+    const result = await req.pool.query(str, [ agentCode, idcard, firstName, surname, phonenumber, email, address, district, province, postalcode, lat, lng ]);
 
     if(result.rows.length > 0){
       // สร้างข้อมูลในตาราง authen

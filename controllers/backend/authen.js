@@ -84,7 +84,7 @@ async function login(req, res) {
           emailaddress : agent_res.emailaddress,
           telephone : agent_res.telephone,
           province : agent_res.province,
-          thumnal : agent_res.thumnal,
+          thumnal : agent_res.thumbnail,
           username : auth[0].username, 
           agentcode : auth[0].agentcode, 
           token, 
