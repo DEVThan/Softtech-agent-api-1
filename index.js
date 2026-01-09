@@ -26,19 +26,19 @@ app.use(bodyParser.json());
 
 //### App ###//
 const agentRoutes = require("./routes/frontend/agent");
-app.use("/app", agentRoutes);
+app.use("/api/app", agentRoutes);
 
 
 
 //### Admin ###//
 const authenRoutes = require("./routes/backend/authen");
-app.use("/admin", authenRoutes);
+app.use("/api/admin", authenRoutes);
 
 const profileRoutes = require("./routes/backend/profile");
-app.use("/admin", profileRoutes);
+app.use("/api/admin", profileRoutes);
 
 const performanceRoutes = require("./routes/backend/performance");
-app.use("/admin", performanceRoutes);
+app.use("/api/admin", performanceRoutes);
 
 // // ✅ ใช้ express.json() แยก route อื่นที่เป็น JSON
 // app.use(express.json({ limit: "50mb" }));

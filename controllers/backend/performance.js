@@ -136,7 +136,7 @@ async function get_once(req, res) {
 async function create(req, res) {
   try {
     const { performancecode } = req; 
-    const { agentcode, name, desc } = req.body;
+    const { agentcode, name, desc, lat, lng } = req.body;
     if (!name) {
       return res.status(400).json({
         status: false,
@@ -146,10 +146,10 @@ async function create(req, res) {
     const now = new Date();
     await req.pool.query(
       `INSERT INTO performance (
-        performancecode, agentcode, name, description, createdate, updatedate
-      ) VALUES ($1, $2, $3, $4, $5, $6)
+        performancecode, agentcode, name, description, createdate, updatedate, lat, lng
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING * `,
-      [performancecode, agentcode, name, desc, now, now]
+      [performancecode, agentcode, name, desc, now, now, lat, lng]
     );
 
 
@@ -196,7 +196,7 @@ async function create(req, res) {
 const ExifReader = require('exifreader');
 async function update(req, res) {
   try {
-    const { performancecode, agentcode, name, desc } = req.body;
+    const { performancecode, agentcode, name, desc, lat, lng } = req.body;
     if (!performancecode || !agentcode || !name) {
       return res.status(400).json({
         status: false,
@@ -205,10 +205,10 @@ async function update(req, res) {
     }
 
     const now = new Date();
-    const strUpdateQuery = `UPDATE performance SET name = $1, description = $2, updatedate = $3 WHERE performancecode = $4 AND  agentcode = $5 RETURNING *`;
+    const strUpdateQuery = `UPDATE performance SET name = $1, description = $2, updatedate = $3, lat = $4, lng = $5 WHERE performancecode = $6 AND  agentcode = $7 RETURNING *`;
     await req.pool.query(
       strUpdateQuery,
-      [name, desc, now, performancecode, agentcode]
+      [name, desc, now, lat, lng, performancecode, agentcode]
     );
 
     // insert all file with EXIF
