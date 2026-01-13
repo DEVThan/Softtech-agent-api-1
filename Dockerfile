@@ -49,14 +49,19 @@ ENV NODE_ENV=production
 
 # Copy และติดตั้ง dependencies แบบ production
 COPY package*.json ./
-RUN npm ci --only=production
+# RUN npm ci --only=production
+RUN npm install --omit=dev
 
 # Copy source code ทั้งหมด
 COPY . .
 
 # สร้าง uploads directory และกำหนดสิทธิ์
-RUN mkdir -p uploads && \
-    addgroup -g 1001 -S nodejs && \
+# RUN mkdir -p uploads && \
+#     addgroup -g 1001 -S nodejs && \
+#     adduser -S nodejs -u 1001 && \
+#     chown -R nodejs:nodejs /app
+
+RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001 && \
     chown -R nodejs:nodejs /app
 

@@ -10,14 +10,15 @@ const { get_profile,  getAgentById, update_profile, deleteprofile} = require("..
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-
+const BASE_UPLOAD_PATH = process.env.UPLOAD_PATH; // from .env
 const thumnal_storage_add = multer.diskStorage({
   destination: (req, file, cb) => {
     const agentcode = req.agentcode || req.body.agentcode;
-    const country = req.country || req?.header("country") || "en";
-    const dir = path.join("uploads", "profile", country, agentcode);
+    const country = req.country || req?.header("country") || "th";
+    // const dir = path.join("uploads", "profile", country, agentcode);
+    const dir = path.join(BASE_UPLOAD_PATH, "uploads", country, "agent", agentcode, "profile");
 
-    // ✅ ถ้ามีไฟล์เดิมอยู่ ลบออกก่อน
+    // ✅ delete old files
     if (fs.existsSync(dir)) {
         const files = fs.readdirSync(dir);
         for (const f of files) {

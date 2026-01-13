@@ -137,6 +137,7 @@ async function create(req, res) {
   try {
     const { performancecode } = req; 
     const { agentcode, name, desc, lat, lng } = req.body;
+    const country = req.country || req?.header("country") || "th";
     if (!name) {
       return res.status(400).json({
         status: false,
@@ -155,11 +156,25 @@ async function create(req, res) {
 
     // insert all file
     if (req.files && req.files.length > 0) {
-      const insertValues = req.files.map((file) => [
-        performancecode,
-        file.path,
-        now,
-      ]);
+
+      const insertValues = req.files.map((file) => {
+        const relativePath = path.join(
+          "uploads",
+          country,
+          "agent",
+          agentcode,
+          "performance",
+          performancecode,
+          file.filename
+        );
+
+        return [
+          performancecode,
+          relativePath,
+          now,
+        ];
+      });
+
 
       const queryText = `
         INSERT INTO performance_file (performancecode, path, createdate)
@@ -197,6 +212,7 @@ const ExifReader = require('exifreader');
 async function update(req, res) {
   try {
     const { performancecode, agentcode, name, desc, lat, lng } = req.body;
+    const country = req.country || req?.header("country") || "th";
     if (!performancecode || !agentcode || !name) {
       return res.status(400).json({
         status: false,
@@ -249,7 +265,17 @@ async function update(req, res) {
         // console.warn("❌ อ่าน EXIF ไม่ได้:", err.message);
       }
 
-      insertValues.push([performancecode, file.path, lat, long, now]);
+      const relativePath = path.join(
+        "uploads",
+        country,
+        "agent",
+        agentcode,
+        "performance",
+        performancecode,
+        file.filename
+      );
+
+      insertValues.push([performancecode, relativePath, lat, long, now]);
     }
     if (insertValues.length > 0) {
       const placeholders = insertValues
@@ -301,11 +327,31 @@ async function delete_performance(req, res) {
     await req.pool.query( `DELETE FROM performance  WHERE performancecode = $1 AND agentcode = $2`, [performancecode, agentcode] );
     await req.pool.query( `DELETE FROM performance_file  WHERE performancecode = $1`, [performancecode] );
 
-     const country = req.country || req?.header("country") || "en";
-     const dir = path.join("uploads", "performance", country, agentcode, performancecode);
-    
+    const country = req.country || req?.header("country") || "en";
+    const filepath = path.join("uploads", country, "agent", agentcode, "performance", performancecode);
+    const relativePath = filepath; // จาก DB เช่น uploads/xx/agent/...
+    const absolutePath = path.resolve(
+      process.env.UPLOAD_PATH,
+      relativePath
+    );
+
+    // 🔐 ป้องกันลบไฟล์นอกโฟลเดอร์ upload
+    if (!absolutePath.startsWith(path.resolve(process.env.UPLOAD_PATH))) {
+      return res.status(400).json({
+        status: true,
+        message: "Invalid file path",
+      });
+    }
+
+    if (!fs.existsSync(absolutePath)) {
+      return res.status(404).json({
+        status: true,
+        message: "File not found",
+      });
+    }
+
     // delete all file
-    fs.rmSync(dir, { recursive: true, force: true });
+    fs.rmSync(absolutePath, { recursive: true, force: true });
     res.status(200).json({
       status: true,
       message: "remove successfully",
@@ -332,7 +378,7 @@ async function delete_performance_file(req, res) {
       });
     }
 
-    console.log(performancecode , fileid, filepath);
+    // console.log(performancecode , fileid, filepath);
 
     // สร้าง path ของไฟล์ที่ต้องการลบ
     // const filePath = path.join(
@@ -348,13 +394,31 @@ async function delete_performance_file(req, res) {
     await req.pool.query( `DELETE FROM performance_file  WHERE id = $1 AND performancecode = $2`, [fileid, performancecode] );
     
     // delete file
-    if (!fs.existsSync(filepath)) {
-      return res.status(404).json({
+    const relativePath = filepath; // จาก DB เช่น uploads/agent/...
+
+    // ❗ normalize + lock ให้อยู่ใน UPLOAD_PATH
+    const absolutePath = path.resolve(
+      process.env.UPLOAD_PATH,
+      relativePath
+    );
+
+    // 🔐 ป้องกันลบไฟล์นอกโฟลเดอร์ upload
+    if (!absolutePath.startsWith(path.resolve(process.env.UPLOAD_PATH))) {
+      return res.status(400).json({
         status: false,
+        message: "Invalid file path",
+      });
+    }
+
+    if (!fs.existsSync(absolutePath)) {
+      return res.status(404).json({
+        status: true,
         message: "File not found",
       });
     }
-    fs.unlinkSync(filepath);
+
+    fs.unlinkSync(absolutePath);
+
     res.status(200).json({
       status: true,
       message: "remove successfully",

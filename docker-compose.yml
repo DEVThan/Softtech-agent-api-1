@@ -11,10 +11,12 @@ services:
     env_file:
       - .env
     volumes:
-      - uploads-data:/app/uploads  # Mount uploads directory for persistent storage
+      # - uploads-data:/app/uploads  # Mount uploads directory for persistent storage
+      - uploads-data:/opt/softtechnw-upload
     environment:
       - NODE_ENV=production
       - PORT=3006
+      - UPLOAD_PATH=/opt/softtechnw-upload
       - DB_HOST=${DB_HOST:-localhost}
       - DB_PORT=${DB_PORT:-5432}
       - DB_USER=${DB_USER}

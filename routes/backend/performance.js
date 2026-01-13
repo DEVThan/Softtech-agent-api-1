@@ -32,13 +32,13 @@ async function generatePerformanceCode(req, prefix) {
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-
+const BASE_UPLOAD_PATH = process.env.UPLOAD_PATH; // from .env
 const performance_storage_add = multer.diskStorage({
   destination: (req, file, cb) => {
     const agentcode = req.body.agentcode;
     const performancecode = req.performancecode || req.body.performancecode;
-    const country = req.country || req?.header("country") || "en";
-    const dir = path.join("uploads", "performance", country, agentcode, performancecode);
+    const country = req.country || req?.header("country") || "th";
+    const dir = path.join(BASE_UPLOAD_PATH, "uploads", country, "agent", agentcode, "performance", performancecode);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
@@ -51,8 +51,8 @@ const performance_storage_edit = multer.diskStorage({
   destination: (req, file, cb) => {
     const agentcode = req.body.agentcode;
     const performancecode = req.body.performancecode;
-    const country = req.country || req?.header("country") || "en";
-    const dir = path.join("uploads", "performance", country, agentcode, performancecode);
+    const country = req.country || req?.header("country") || "th";
+    const dir = path.join(BASE_UPLOAD_PATH, "uploads", country, "agent", agentcode, "performance", performancecode);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },

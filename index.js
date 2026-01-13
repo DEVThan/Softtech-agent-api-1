@@ -1,4 +1,7 @@
-require('dotenv').config();
+// require('dotenv').config();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 const express = require("express");
 const cors = require("cors");
 
@@ -11,7 +14,18 @@ const app = express();
 const PORT = process.env.PORT || 3006;
 
 const path = require("path");
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// validate env
+const UPLOAD_ROOT = process.env.UPLOAD_PATH?.trim();
+if (!UPLOAD_ROOT) {
+  throw new Error("UPLOAD_PATH is not defined");
+}
+
+app.use(
+  "/uploads",
+  express.static(path.join(process.env.UPLOAD_PATH, "uploads"))
+);
 
 // อนุญาตทุก origin (สำหรับ dev)
 app.use(cors());
