@@ -47,12 +47,7 @@ WORKDIR /app
 # ตั้ง environment ก่อนติดตั้ง dependencies
 ENV NODE_ENV=production
 
-# Copy และติดตั้ง dependencies แบบ production
-COPY package*.json ./
-# RUN npm ci --only=production
-RUN npm install --omit=dev
-
-# Copy source code ทั้งหมด
+# Copy source code และ node_modules ทั้งหมด
 COPY . .
 
 # สร้าง uploads directory และกำหนดสิทธิ์
@@ -61,11 +56,11 @@ COPY . .
 #     adduser -S nodejs -u 1001 && \
 #     chown -R nodejs:nodejs /app
 
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001 && \
-    chown -R nodejs:nodejs /app
-
-USER nodejs
+# Run as root for file upload permissions
+# RUN addgroup -g 1001 -S nodejs && \
+#     adduser -S nodejs -u 1001 && \
+#     chown -R nodejs:nodejs /app
+# USER nodejs
 
 EXPOSE 3006
 

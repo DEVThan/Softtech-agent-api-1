@@ -1,9 +1,9 @@
 # Dependencies
-node_modules
+# node_modules  # ใช้ node_modules ที่ copy มา
 npm-debug.log
 
 # Environment files
-.env
+# .env  # ต้องการ .env ใน container
 .env.local
 .env.*.local
 

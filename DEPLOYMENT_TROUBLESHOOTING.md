@@ -196,7 +196,8 @@ sed -i 's/ = /=/g' .env
 ### 3. สร้างไฟล์ .env บน Server (ถ้าจำเป็น)
 
 ```bash
-ssh -p 6789 root@softtechnw.com
+ssh root@203.78.103.157  -p 6789
+@pe$ajEr3d8#
 
 cd /opt/softtech-agent-api
 

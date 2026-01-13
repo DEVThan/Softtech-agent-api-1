@@ -11,8 +11,8 @@ services:
     env_file:
       - .env
     volumes:
-      # - uploads-data:/app/uploads  # Mount uploads directory for persistent storage
-      - uploads-data:/opt/softtechnw-upload
+      # Bind mount to host directory for file uploads
+      - /opt/softtechnw-upload:/opt/softtechnw-upload
     environment:
       - NODE_ENV=production
       - PORT=3006
@@ -32,6 +32,4 @@ services:
       retries: 3
       start_period: 40s
 
-volumes:
-  uploads-data:
-    driver: local
+# volumes section removed - using bind mount instead
