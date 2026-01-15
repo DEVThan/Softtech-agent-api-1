@@ -34,11 +34,17 @@ ssh -p 6789 root@203.78.103.157
 
 # 6. บน VPS: Load image แล้วรัน
 cd /opt/softtech-agent-api
-docker-compose down
+#docker-compose down
+docker-compose down --rmi all --volumes --remove-orphans
+
+# 7. ลบ image เก่าที่อาจค้างอยู่ (กันชื่อซ้ำ)
+docker images | grep softtech
+docker rmi -f softtech-agent-api softtech-agent-api:latest softtech-agent-api-api || true
+
 docker load < softtech-agent-api.tar.gz
 docker-compose up -d
 
-# 7. เช็ค logs
+# 8. เช็ค logs
 docker-compose logs -f
 ```
 
