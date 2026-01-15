@@ -70,7 +70,7 @@ async function update_profile(req, res) {
     if (req.files && req.files.length > 0) {
       // เก็บ path ที่ใช้แสดงผลจริง
       const file = req.files[0];
-      const thumbnailPath = file.path.replace( process.env.UPLOAD_PATH, "" ); 
+      const thumbnailPath = file.path.replace( process.env.UPLOAD_PATH + "/", "/" ); 
 
       await req.pool.query( `UPDATE agent  SET  thumbnail = $2 WHERE agentcode = $1`, [agentcode, thumbnailPath] );
     }

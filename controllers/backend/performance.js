@@ -158,7 +158,7 @@ async function create(req, res) {
     if (req.files && req.files.length > 0) {
 
       const insertValues = req.files.map((file) => {
-        const relativePath = file.path.replace( process.env.UPLOAD_PATH, "" );
+        const relativePath = file.path.replace( process.env.UPLOAD_PATH + "/", "/" );
         return [
           performancecode,
           relativePath,
@@ -256,7 +256,7 @@ async function update(req, res) {
         // console.warn("❌ อ่าน EXIF ไม่ได้:", err.message);
       }
 
-      const relativePath = file.path.replace( process.env.UPLOAD_PATH, "" );
+      const relativePath = file.path.replace( process.env.UPLOAD_PATH + "/", "/" );
 
       insertValues.push([performancecode, relativePath, lat, long, now]);
     }
