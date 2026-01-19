@@ -380,11 +380,12 @@ async function delete_performance_file(req, res) {
     const relativePath = filepath; // จาก DB เช่น uploads/agent/...
 
     // ❗ normalize + lock ให้อยู่ใน UPLOAD_PATH
-    const absolutePath = path.resolve(
-      process.env.UPLOAD_PATH,
-      relativePath
-    );
+    // const absolutePath = path.resolve(
+    //   process.env.UPLOAD_PATH,
+    //   relativePath
+    // );
 
+    const absolutePath = path.join(process.env.UPLOAD_PATH, relativePath);
     // 🔐 ป้องกันลบไฟล์นอกโฟลเดอร์ upload
     if (!absolutePath.startsWith(path.resolve(process.env.UPLOAD_PATH))) {
       return res.status(400).json({
