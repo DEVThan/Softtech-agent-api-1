@@ -47,6 +47,9 @@ WORKDIR /app
 # ตั้ง environment ก่อนติดตั้ง dependencies
 ENV NODE_ENV=production
 
+# สร้าง user และ group nodejs
+RUN addgroup -S nodejs && adduser -S nodejs -G nodejs
+
 # Copy source code และ node_modules ทั้งหมด
 COPY . .
 
@@ -60,7 +63,11 @@ COPY . .
 # RUN addgroup -g 1001 -S nodejs && \
 #     adduser -S nodejs -u 1001 && \
 #     chown -R nodejs:nodejs /app
-# USER nodejs
+
+# กำหนดสิทธิ์ให้ user nodejs
+RUN chown -R nodejs:nodejs /app
+
+USER nodejs
 
 EXPOSE 3006
 
