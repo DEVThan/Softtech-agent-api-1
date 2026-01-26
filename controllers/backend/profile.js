@@ -38,7 +38,7 @@ async function update_profile(req, res) {
     // console.log(req.body);
     const { 
       agentcode, agentname, agentsurname, emailaddress, telephone, 
-      addr1, country, street, subdistrict, district, province, postalcode 
+      addr1, country, street, subdistrict, district, province, postalcode, lat, lng 
     } = req.body;
     const countries = req.country || "en";
 
@@ -62,9 +62,11 @@ async function update_profile(req, res) {
       subdistrict = $9, 
       district = $10, 
       province = $11, 
-      postalcode = $12
+      postalcode = $12,
+      lat = $13,
+      lng = $14
       WHERE agentcode = $1`,
-      [agentcode, agentname, agentsurname, emailaddress, telephone, addr1, country, street, subdistrict, district, province, postalcode]
+      [agentcode, agentname, agentsurname, emailaddress, telephone, addr1, country, street, subdistrict, district, province, postalcode, lat, lng]
     );
 
     if (req.files && req.files.length > 0) {
